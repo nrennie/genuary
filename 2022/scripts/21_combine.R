@@ -36,7 +36,7 @@ p <- ggplot() +
   geom_polygon(data=positions, mapping=aes(x = x, y = y, group = id),
                fill="#3fe7b2", colour="black", size=0.5) +
   geom_point(data=d, mapping=aes(x=x, y=y, size=I(size), colour=fill), pch=19) +
-  scale_fill_carto_d(palette = "Bold") +
+  scale_colour_carto_d(palette = "Bold") +
   xlim(-0.5,9.5) +
   ylim(-0.5,9.5) +
   coord_fixed(expand = F) +
