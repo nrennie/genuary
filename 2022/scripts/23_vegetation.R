@@ -29,6 +29,8 @@ ggplot(plot_data, mapping = aes(x = x, y = ynew)) +
   geom_segment(aes(xend = xend, yend = yend, colour = I(col))) +
   coord_fixed() +
   theme_void() +
+  xlim(min(plot_data[,-c(6)]), max(plot_data[,-c(6)])) +
+  ylim(min(plot_data[,-c(6)]), max(plot_data[,-c(6)])) +
   theme(legend.position = "none",
         panel.background = element_rect(fill = "#003D18", colour = "#003D18"),
         plot.background = element_rect(fill = "#003D18", colour = "#003D18"))
