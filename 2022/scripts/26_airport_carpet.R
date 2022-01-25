@@ -57,3 +57,12 @@ wrap_plots(p) +
   plot_layout(ncol=3, nrow=3) &
   theme(plot.margin = unit(c(0,0,0,0), "cm"))
 
+
+set.seed(123)
+ss <- sample(1:200, size=100, replace=F)
+p <- lapply(ss, function(i) carpet_tile(i))
+
+wrap_plots(p) +
+  plot_layout(ncol=10, nrow=10) &
+  theme(plot.margin = unit(c(0,0,0,0), "cm"))
+
