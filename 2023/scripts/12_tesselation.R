@@ -1,0 +1,13 @@
+aRt::mosaic(n = 100,
+            fill_cols = PrettyCols::prettycols("PurpleGreens", 9),
+            line_col = "grey10",
+            bg_col = "grey10",
+            line_size = 0.1,
+            x_means = c(0, 10, 5),
+            y_means = c(0, 7, 8),
+            xy_var = 2,
+            s = 123)
+ggplot2::ggsave(filename = "2023/art/12_tesselation.png",
+                width = 600,
+                height = 600,
+                unit = "px")
