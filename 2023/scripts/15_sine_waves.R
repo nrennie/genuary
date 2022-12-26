@@ -1,0 +1,10 @@
+aRt::waves(a=22,
+           b=50,
+           linewidth = 0.1,
+           main_col=PrettyCols::prettycols("PurplePinks", 9),
+           bg_col="grey90",
+           s=2023)
+ggplot2::ggsave(filename = "2023/art/15_sine_waves.png",
+                width = 600,
+                height = 600,
+                unit = "px")
