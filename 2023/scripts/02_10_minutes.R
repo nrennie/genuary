@@ -1,0 +1,10 @@
+aRt::lines(n = 50,
+           max_length = 10,
+           linewidth = 0.25,
+           main_col = "#C03221",
+           bg_col = "#f2d6d2",
+           s = 2023)
+ggplot2::ggsave(filename = "2023/art/02_10_minutes.png",
+                width = 600,
+                height = 600,
+                unit = "px")
