@@ -1,0 +1,12 @@
+aRt::squiggles(res = 100,
+               num_lines = 10,
+               perc = 0.5,
+               alpha_low = 0.5,
+               alpha_high = 1,
+               line_col = "#348954",
+               bg_col = "#fafafa",
+               s = 1234)
+ggplot2::ggsave(filename = "2023/art/30_minimalism.png",
+                width = 600,
+                height = 600,
+                unit = "px")
