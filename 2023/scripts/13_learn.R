@@ -1,4 +1,5 @@
 library(sf)
+library(ggplot2)
 
 b0 = st_polygon(list(rbind(c(-1,-1), c(1,-1), c(1,1), c(-1,1), c(-1,-1))))
 b1 = b0 + 2
