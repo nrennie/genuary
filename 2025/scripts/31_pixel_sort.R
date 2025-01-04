@@ -51,7 +51,7 @@ ggplot2::ggplot() +
   ggplot2::coord_fixed(expand = FALSE) +
   ggplot2::theme_void()
 
-ggplot2::ggsave(p,
+ggplot2::ggsave(
   filename = "2025/art/31_pixel_sort.png",
   width = rescale * imager::width(img),
   height = rescale * imager::height(img),
