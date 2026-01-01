@@ -11,7 +11,6 @@ col_palette <- c(
   "#8a3e4c", "#3d3c41", "#a93830"
 )
 line_col <- "#2B1D12"
-s <- 8
 
 
 # Functions ---------------------------------------------------------------
@@ -48,7 +47,7 @@ generate_street <- function(street_y) {
       y2 <- mean(
         c(house_data$ymin[i], house_data$ymax[i])
       ) - runif(1, 0.2, 0.35)
-      s <- runif(1, 4, 7)
+      s <- runif(1, 4, 6)
       buffer <- runif(1, 0, 0.02)
       x <- split_thirds(house_data$xmin[i], house_data$xmax[i])
       x1 <- x[1] - buffer
@@ -154,7 +153,7 @@ g <- ggplot() +
   theme_void() +
   theme(legend.position = "none")
 
-set.seed(s)
+set.seed(20260108)
 for (i in n_y:1) {
   g <- g +
     draw_row(generate_street(i))
