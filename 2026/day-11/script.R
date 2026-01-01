@@ -28,6 +28,7 @@ ggplot() +
     data = plot_data,
     mapping = aes(x = char_num, y = y, label = chars),
     family = "Caveat",
+    colour = text_col,
     size = 4,
     hjust = 0
   ) +
