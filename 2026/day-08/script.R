@@ -1,11 +1,26 @@
 library(tidyverse)
 
-# Functions
+
+# Parameters --------------------------------------------------------------
+
+n_x_min <- 4
+n_x_max <- 8
+n_y <- 7
+col_palette <- c(
+  "#a0462c", "#c38c39", "#d3d4cf",
+  "#8a3e4c", "#3d3c41", "#a93830"
+)
+line_col <- "#2B1D12"
+s <- 8
+
+
+# Functions ---------------------------------------------------------------
+
 generate_x_values <- function(min_val, max_val, y) {
   n_x <- sample(min_val:max_val, 1)
   x_vals <- c(0, cumsum(runif(n_x, 0.2, 1)))
   x_vals <- x_vals / max(x_vals)
-  plot_data <- data.frame(
+  house_data <- data.frame(
     xmin = x_vals[1:n_x],
     xmax = x_vals[2:(n_x + 1)],
     ymin = rep(y, n_x),
@@ -19,96 +34,108 @@ split_thirds <- function(xmin, xmax) {
   return(output)
 }
 
-# Parameters
-n_x_min <- 4
-n_x_max <- 8
-n_y <- 5
-col_palette <- c(
-  "#a0462c", "#c38c39", "#d3d4cf",
-  "#8a3e4c", "#3d3c41", "#a93830"
-)
-line_col <- "#2B1D12"
-s <- 8
+generate_street <- function(street_y) {
+  house_data <- generate_x_values(n_x_min, n_x_max, street_y) |>
+    mutate(row = ymin)
 
-# Data
-set.seed(s)
-plot_data <- purrr::map(
-  .x = 1:n_y,
-  .f = ~ generate_x_values(n_x_min, n_x_max, .x)
-) |>
-  list_rbind() |>
-  arrange(desc(ymin)) |> 
-  mutate(row = ymin)
-
-window_data <- data.frame(x = c(NA), y = c(NA), size = c(NA), row = c(NA)) |>
-  as_tibble()
-for (i in 1:nrow(plot_data)) {
-  if (plot_data$xmax[i] - plot_data$xmin[i] > 0.09) {
-    y1 <- mean(c(plot_data$ymin[i], plot_data$ymax[i])) + runif(1, 0.2, 0.35)
-    y2 <- mean(c(plot_data$ymin[i], plot_data$ymax[i])) - runif(1, 0.2, 0.35)
-    s <- runif(1, 4, 7)
-    buffer <- runif(1, 0, 0.02)
-    x <- split_thirds(plot_data$xmin[i], plot_data$xmax[i])
-    x1 <- x[1] - buffer
-    x2 <- x[2] + buffer
-    window_data <- window_data |>
-      add_row(x = c(x1, x2, x1, x2),
-              y = c(y1, y1, y2, y2),
-              size = s,
-              row = plot_data$ymin[i]) 
+  window_data <- data.frame(x = NA, y = NA, size = NA, row = NA) |>
+    as_tibble()
+  for (i in 1:nrow(house_data)) {
+    if (house_data$xmax[i] - house_data$xmin[i] > 0.09) {
+      y1 <- mean(
+        c(house_data$ymin[i], house_data$ymax[i])
+      ) + runif(1, 0.2, 0.35)
+      y2 <- mean(
+        c(house_data$ymin[i], house_data$ymax[i])
+      ) - runif(1, 0.2, 0.35)
+      s <- runif(1, 4, 7)
+      buffer <- runif(1, 0, 0.02)
+      x <- split_thirds(house_data$xmin[i], house_data$xmax[i])
+      x1 <- x[1] - buffer
+      x2 <- x[2] + buffer
+      window_data <- window_data |>
+        add_row(
+          x = c(x1, x2, x1, x2),
+          y = c(y1, y1, y2, y2),
+          size = s,
+          row = house_data$ymin[i]
+        )
+    }
   }
-}
-window_data <- window_data |> 
-  drop_na()
+  window_data <- window_data |>
+    drop_na()
 
-
-# roofs
-roof_data <- data.frame(x = c(NA), y = c(NA), grp = c(NA), row = c(NA)) |>
-  as_tibble()
-for (i in 1:nrow(plot_data)) {
-  roof_width <- runif(1, 0.01, (plot_data$xmax[i] - plot_data$xmin[i])/2)
-  roof_height <- runif(1, 0.1, 0.3)
-  x <- c(plot_data$xmin[i], plot_data$xmax[i], 
-         plot_data$xmax[i] - roof_width, plot_data$xmin[i] + roof_width,
-         plot_data$xmin[i])
-  y <- c(plot_data$ymax[i], plot_data$ymax[i], 
-         plot_data$ymax[i] + roof_height, plot_data$ymax[i] + roof_height,
-         plot_data$ymax[i])
+  # roofs
+  roof_data <- data.frame(x = NA, y = NA, grp = NA, row = NA) |>
+    as_tibble()
+  for (i in 1:nrow(house_data)) {
+    roof_width <- runif(
+      1, 0.01,
+      (house_data$xmax[i] - house_data$xmin[i]) / 2
+    )
+    roof_height <- runif(1, 0.1, 0.3)
+    x <- c(
+      house_data$xmin[i], house_data$xmax[i],
+      house_data$xmax[i] - roof_width, house_data$xmin[i] + roof_width,
+      house_data$xmin[i]
+    )
+    y <- c(
+      house_data$ymax[i], house_data$ymax[i],
+      house_data$ymax[i] + roof_height, house_data$ymax[i] + roof_height,
+      house_data$ymax[i]
+    )
+    roof_data <- roof_data |>
+      add_row(x = x, y = y, grp = i, row = house_data$ymin[i])
+  }
   roof_data <- roof_data |>
-    add_row(x = x, y = y, grp = i, row = plot_data$ymin[i]) 
+    drop_na()
+  output <- list(
+    house_data = house_data,
+    roof_data = roof_data,
+    window_data = window_data
+  )
+  return(output)
 }
-roof_data <- roof_data |> 
-  drop_na()
 
 # Plot function
-draw_row <- function(row_y) {
+draw_row <- function(list_data) {
   output <- list(
+    # houses
     geom_rect(
-      data = dplyr::filter(plot_data, row == row_y),
+      data = list_data$house_data,
+      aes(
+        xmin = xmin, xmax = xmax,
+        ymin = ymin, ymax = ymax
+      ),
+      colour = line_col,
+      fill = "grey20"
+    ),
+    geom_rect(
+      data = list_data$house_data,
       aes(
         xmin = xmin, xmax = xmax,
         ymin = ymin, ymax = ymax,
-        fill = col
+        fill = col, alpha = (n_y + 1 - list_data$house_data$row[1])
       ),
       colour = line_col
     ),
     # windows
     geom_point(
-      data = dplyr::filter(window_data, row == row_y),
+      data = list_data$window_data,
       aes(x = x, y = y, size = size),
       colour = line_col,
       pch = 22,
-      fill = '#FFF799'
+      fill = "#FFF799"
     ),
     geom_point(
-      data = dplyr::filter(window_data, row == row_y),
+      data = list_data$window_data,
       aes(x = x, y = y, size = size / 1.8),
       colour = line_col,
       pch = 3
     ),
     # roofs
     geom_polygon(
-      data = dplyr::filter(roof_data, row == row_y),
+      data = list_data$roof_data,
       aes(x = x, y = y, group = grp),
       fill = line_col,
       colour = line_col
@@ -117,20 +144,30 @@ draw_row <- function(row_y) {
   return(output)
 }
 
-# Plot
-ggplot() +
-  draw_row(row_y = 5) +
-  draw_row(row_y = 4) +
-  draw_row(row_y = 3) +
-  draw_row(row_y = 2) +
-  draw_row(row_y = 1) +
+# Plot --------------------------------------------------------------------
+
+g <- ggplot() +
   scale_fill_identity() +
   scale_size_identity() +
-  coord_cartesian(expand = FALSE, ylim = c(1, 6)) +
-  theme_void() 
+  scale_alpha(range = c(0.2, 1)) +
+  coord_cartesian(expand = FALSE, ylim = c(1, n_y + 1)) +
+  theme_void() +
+  theme(legend.position = "none")
 
-# Save
-ggplot2::ggsave("2026/day-08/day-08.png",
+set.seed(s)
+for (i in n_y:1) {
+  g <- g +
+    draw_row(generate_street(i))
+}
+
+g
+
+
+# Save --------------------------------------------------------------------
+
+ggplot2::ggsave(
+  filename = "2026/day-08/day-08.png",
+  plot = g,
   width = 5, height = 5, units = "in",
   bg = col_palette[3]
 )
