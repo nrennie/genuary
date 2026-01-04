@@ -1,4 +1,6 @@
 library(tidyverse)
+library(magick)
+library(ggimage)
 
 
 # Data --------------------------------------------------------------------
@@ -11,7 +13,7 @@ for (i in 3:(n + 1)) {
 plot_data <- tibble(
   fib = fib
 ) |>
-  mutate(x0 = 0, y0 = 0) |> 
+  mutate(x0 = 0, y0 = 0) |>
   mutate(a = row_number())
 
 positions <- rep(c("left", "bottom", "right", "top"), 10)
@@ -62,7 +64,7 @@ panel_col <- "white"
 
 # Plot --------------------------------------------------------------------
 
-ggplot() +
+g <- ggplot() +
   geom_rect(
     data = plot_data,
     mapping = aes(
@@ -83,6 +85,60 @@ ggplot() +
   theme(
     legend.position = "none",
     panel.background = element_rect(fill = panel_col, colour = main_col),
+    plot.background = element_rect(fill = main_col, colour = main_col)
+  )
+
+tmp1 <- tempfile()
+tmp2 <- tempfile()
+tmp3 <- tempfile()
+tmp4 <- tempfile()
+ggplot2::ggsave(
+  filename = tmp1,
+  plot = g,
+  device = "png",
+  width = 5, height = 5 / 1.6, units = "in",
+  bg = main_col
+)
+
+img1 <- image_read(tmp1)
+img2 <- image_rotate(img1, 90) |> image_write(tmp2)
+img3 <- image_rotate(img1, 180) |> image_write(tmp3)
+img4 <- image_rotate(img1, 270) |> image_write(tmp4)
+
+ggplot() +
+  geom_image(
+    data = data.frame(
+      x = c(-0.61, 0.61),
+      y = c(-0.345, 0.345),
+      image = c(tmp1, tmp3)
+    ),
+    aes(
+      x = x,
+      y = y,
+      image = image
+    ),
+    size = 0.5
+  ) +
+  geom_image(
+    data = data.frame(
+      x = c(-0.38, 0.38),
+      y = c(0.555, -0.555),
+      image = c(tmp2, tmp4)
+    ),
+    aes(
+      x = x,
+      y = y,
+      image = image
+    ),
+    by = "height",
+    size = 0.5
+  ) +
+  scale_x_continuous(limits = c(-1.1, 1.1)) +
+  scale_y_continuous(limits = c(-1, 1)) +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    panel.background = element_rect(fill = main_col, colour = main_col),
     plot.background = element_rect(fill = main_col, colour = main_col),
     plot.margin = margin(5, 5, 5, 5)
   )
@@ -92,6 +148,6 @@ ggplot() +
 
 ggplot2::ggsave(
   filename = "2026/day-03/day-03.png",
-  width = 5, height = 5 / 1.6, units = "in",
+  width = 5, height = 5, units = "in",
   bg = main_col
 )
