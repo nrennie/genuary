@@ -1,6 +1,7 @@
+day <- 17
 webshot2::webshot(
-    url = "2026/day-01/index.html",
-    file = "2026/day-01/day-01.png",
+    url = glue::glue("2026/day-{day}/index.html"),
+    file = glue::glue("2026/day-{day}/day-{day}.png"),
     selector = "#art",
     expand = c(8, 8, 8, 8),
     quiet = TRUE,
