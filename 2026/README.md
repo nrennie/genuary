@@ -13,6 +13,11 @@ GENUARY is an artificially generated month of time where we build code that make
 </p>
 
 <p align="center">
+  <img src="day-14/day-14.png" width="48%">
   <img src="day-17/day-17.png" width="48%">
+</p>
+
+<p align="center">
   <img src="day-21/day-21.png" width="48%">
+  <img src="day-24/day-24.png" width="48%">
 </p>
